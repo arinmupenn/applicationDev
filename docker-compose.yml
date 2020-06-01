@@ -1,0 +1,57 @@
+version : '3.3'
+services:
+    postgres:
+      image: 'postgres:latest'
+      ports:
+       - 5432:5432
+      volumes:
+       - ./dbql:/docker-entrypoint-initdb.d 
+      environment:
+       - PGUSER=postgres
+       - PGDATABASE=postgres
+       - PGPASSWORD=postgres_password
+       - PGPORT=5432
+    redis:
+      image: 'redis:latest'
+      environment:
+       - REDIS_HOST=redis
+       - REDIS_PORT=6379
+    api:
+      image: 'arinmupenn/platform_o'
+      ports:
+       - 3000:3000
+      volumes:
+        - ./upload:/app/upload 
+        - ./custom:/app/custom
+      environment:
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - DBUSER=postgres
+        - DBHOST=postgres
+        - DBDATABASE=postgres
+        - DBPASSWORD=postgres_password
+        - DBPORT=5432
+        - MAILSENDER=cynergasia@gmail.com
+        - MAILPWD=ppm!1234
+        - SIGNKEY=abc
+        - QUEUEBROKER=broker:29092
+        - LOGTOPIC=Log
+        - LOGLEVEL=CONSOLE
+        - MAILTOPIC=mail
+        - MDBURL=mongodb://u1:p1@mdb:27017
+        - MDBUSER=services
+        - MDBPWD=welcome
+        - MDBDATABASE=mydb
+    slave:
+      image: 'arinmupenn/platform_o'
+      ports:
+        - 8002:8002
+      volumes:
+        - ./slave/log:/app/log 
+      environment:
+         - MAILSENDER=cynergasia@gmail.com
+         - MAILPWD=ppm!1234
+         - SIGNKEY=abc
+         - QUEUEBROKER=broker:29092
+         - LOGTOPIC=Log
+         - MAILTOPIC=mail
